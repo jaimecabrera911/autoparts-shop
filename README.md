@@ -32,7 +32,7 @@ Abre [http://localhost:4321](http://localhost:4321).
 |------|-------------|
 | `/` | Home + filtro vehículo |
 | `/catalog` | Hub catálogo |
-| `/shop` | Listado (filtros `?q`, `?category`, `?on_sale`) |
+| `/shop` | Listado con filtros, vista tarjetas/tabla y exportar Excel |
 | `/product/[slug]` | Detalle producto |
 | `/cart` | Carrito (localStorage) |
 | `/checkout` | Checkout guest (demo) |

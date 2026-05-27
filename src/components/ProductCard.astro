@@ -63,33 +63,7 @@ const imageAlt = product.imageAlt ?? product.name;
 </article>
 
 <script>
-  import { addToCart } from '../lib/cart';
-  import { products } from '../data/products';
-
-  function bindAddToCart() {
-    document.querySelectorAll('.add-to-cart').forEach((btn) => {
-      if (btn.getAttribute('data-bound')) return;
-      btn.setAttribute('data-bound', 'true');
-      btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-product-id');
-        const product = products.find((p) => p.id === id);
-        if (!product) return;
-        addToCart({
-          productId: product.id,
-          slug: product.slug,
-          name: product.name,
-          sku: product.sku,
-          price: product.salePrice ?? product.price,
-          image: product.image,
-        });
-        btn.textContent = '✓ Añadido';
-        setTimeout(() => {
-          btn.textContent = product.inStock ? 'Añadir al carrito' : 'Agotado';
-        }, 1500);
-      });
-    });
-  }
-
+  import { bindAddToCart } from '../lib/bind-add-to-cart';
   bindAddToCart();
-  document.addEventListener('astro:page-load', bindAddToCart);
+  document.addEventListener('astro:page-load', () => bindAddToCart());
 </script>

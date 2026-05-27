@@ -47,3 +47,21 @@
     outline-offset: 2px;
   }
 }
+
+.shop-view-btn {
+  color: var(--color-muted);
+  transition: background 0.15s, color 0.15s;
+}
+
+.shop-view-btn:hover {
+  color: var(--color-text);
+}
+
+.shop-view-btn.is-active {
+  background: var(--color-accent);
+  color: white;
+}
+
+.shop-view-btn.is-active:hover {
+  color: white;
+}

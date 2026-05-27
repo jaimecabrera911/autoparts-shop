@@ -1,0 +1,101 @@
+---
+import type { Product } from '../../data/products';
+import { formatPrice } from '../../data/products';
+import { getDisplayPrice } from '../../lib/shop-filters';
+import ProductImage from '../ProductImage.astro';
+
+interface Props {
+  products: Product[];
+}
+
+const { products } = Astro.props;
+---
+
+<div class="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)]">
+  <table class="w-full min-w-[720px] text-left text-sm">
+    <thead>
+      <tr class="border-b border-[var(--color-border)] bg-[var(--color-bg)] text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+        <th class="px-4 py-3">Producto</th>
+        <th class="px-4 py-3">SKU</th>
+        <th class="px-4 py-3">Marca</th>
+        <th class="px-4 py-3">Categoría</th>
+        <th class="px-4 py-3 text-right">Precio</th>
+        <th class="px-4 py-3">Stock</th>
+        <th class="px-4 py-3 text-right">Acción</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-[var(--color-border)]">
+      {
+        products.map((product) => {
+          const displayPrice = getDisplayPrice(product);
+          const imageAlt = product.imageAlt ?? product.name;
+          return (
+            <tr class="hover:bg-[var(--color-bg)]/60">
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <a
+                    href={`/product/${product.slug}`}
+                    class="relative h-12 w-12 shrink-0 overflow-hidden rounded bg-[var(--color-bg)]"
+                  >
+                    <ProductImage
+                      src={product.image}
+                      alt={imageAlt}
+                      class="!h-12 !w-12 !p-0 object-cover"
+                    />
+                  </a>
+                  <div class="min-w-0">
+                    <a
+                      href={`/product/${product.slug}`}
+                      class="font-medium leading-snug hover:text-[var(--color-accent)]"
+                    >
+                      {product.name}
+                    </a>
+                    {product.badge && (
+                      <span
+                        class:list={[
+                          'ml-2 inline-block rounded-full px-1.5 py-0.5 text-[10px] font-medium text-white',
+                          product.badge === 'sale' && 'bg-[var(--color-danger)]',
+                          product.badge === 'new' && 'bg-[var(--color-accent)]',
+                        ]}
+                      >
+                        {product.badge === 'sale' ? 'Oferta' : 'Nuevo'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-[var(--color-muted)] tabular-nums">{product.sku}</td>
+              <td class="px-4 py-3">{product.brand}</td>
+              <td class="px-4 py-3 text-[var(--color-muted)]">{product.category}</td>
+              <td class="px-4 py-3 text-right tabular-nums">
+                <span class="font-semibold">{formatPrice(displayPrice)}</span>
+                {product.salePrice && (
+                  <span class="ml-1 text-xs text-[var(--color-muted)] line-through">
+                    {formatPrice(product.price)}
+                  </span>
+                )}
+              </td>
+              <td class="px-4 py-3">
+                {product.inStock ? (
+                  <span class="text-green-700">En stock</span>
+                ) : (
+                  <span class="text-[var(--color-danger)]">Agotado</span>
+                )}
+              </td>
+              <td class="px-4 py-3 text-right">
+                <button
+                  type="button"
+                  class="add-to-cart rounded-[var(--radius-sm)] border border-[var(--color-accent)] px-3 py-1.5 text-xs font-medium text-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white disabled:opacity-50"
+                  data-product-id={product.id}
+                  disabled={!product.inStock}
+                >
+                  {product.inStock ? 'Añadir' : 'Agotado'}
+                </button>
+              </td>
+            </tr>
+          );
+        })
+      }
+    </tbody>
+  </table>
+</div>

@@ -35,6 +35,45 @@ const sortOptions: { value: SortOption; label: string }[] = [
     </p>
   </div>
 
+  <div class="flex flex-wrap items-center gap-2">
+    <div
+      class="inline-flex rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-surface)] p-0.5"
+      role="group"
+      aria-label="Vista del catálogo"
+    >
+      <button
+        type="button"
+        id="shop-view-grid"
+        class="shop-view-btn is-active rounded-[calc(var(--radius-sm)-2px)] px-3 py-1.5 text-sm font-medium"
+        aria-pressed="true"
+        title="Vista en tarjetas"
+      >
+        <span aria-hidden="true" class="mr-1">▦</span>
+        Tarjetas
+      </button>
+      <button
+        type="button"
+        id="shop-view-table"
+        class="shop-view-btn rounded-[calc(var(--radius-sm)-2px)] px-3 py-1.5 text-sm font-medium"
+        aria-pressed="false"
+        title="Vista en tabla"
+      >
+        <span aria-hidden="true" class="mr-1">☰</span>
+        Tabla
+      </button>
+    </div>
+
+    <button
+      type="button"
+      id="shop-export-excel"
+      class="inline-flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm font-medium hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+      title="Exportar resultados filtrados a Excel"
+    >
+      <span aria-hidden="true">↓</span>
+      Excel
+    </button>
+  </div>
+
   <form method="get" action="/shop" class="flex items-center gap-2">
     {filters.q && <input type="hidden" name="q" value={filters.q} />}
     {filters.category && <input type="hidden" name="category" value={filters.category} />}

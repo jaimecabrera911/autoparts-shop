@@ -7,6 +7,7 @@ import ShopToolbar from '../../components/shop/ShopToolbar.astro';
 import ActiveFilterChips from '../../components/shop/ActiveFilterChips.astro';
 import { products } from '../../data/products';
 import { categories } from '../../data/categories';
+import ShopProductTable from '../../components/shop/ShopProductTable.astro';
 import {
   parseShopFilters,
   filterProducts,
@@ -14,7 +15,9 @@ import {
   countByCategory,
   countByBrand,
   getActiveFilterLabels,
+  getDisplayPrice,
 } from '../../lib/shop-filters';
+import type { ShopExportRow } from '../../lib/shop-export';
 
 const filters = parseShopFilters(Astro.url.searchParams);
 const filtered = filterProducts(products, filters);
@@ -36,6 +39,23 @@ const brandCounts = countByBrand(facetBase, filters.category || undefined);
 
 const categoryName = categories.find((c) => c.slug === filters.category)?.name;
 const activeChips = getActiveFilterLabels(filters, categoryName);
+
+const categoryLabel = (slug: string) =>
+  categories.find((c) => c.slug === slug)?.name ?? slug;
+
+const exportRows: ShopExportRow[] = filtered.map((p) => ({
+  SKU: p.sku,
+  Nombre: p.name,
+  Marca: p.brand,
+  Categoría: categoryLabel(p.category),
+  'Precio venta': getDisplayPrice(p),
+  'Precio lista': p.price,
+  Oferta: p.salePrice ? 'Sí' : 'No',
+  Stock: p.inStock ? 'En stock' : 'Agotado',
+  MPN: p.mpn,
+  EAN: p.ean,
+  URL: new URL(`/product/${p.slug}`, Astro.url.origin).href,
+}));
 ---
 
 <BaseLayout title="Tienda" description="Catálogo de repuestos con filtros avanzados">
@@ -84,13 +104,29 @@ const activeChips = getActiveFilterLabels(filters, categoryName);
             </a>
           </div>
         ) : (
-          <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {filtered.map((product) => (
-              <ProductCard product={product} />
-            ))}
+          <div id="shop-results" class="mt-6">
+            <script
+              type="application/json"
+              id="shop-export-data"
+              set:html={JSON.stringify(exportRows)}
+            />
+            <div id="shop-grid-view" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {filtered.map((product) => (
+                <ProductCard product={product} />
+              ))}
+            </div>
+            <div id="shop-table-view" class="hidden">
+              <ShopProductTable products={filtered} />
+            </div>
           </div>
         )
       }
     </div>
   </div>
+
+  <script>
+    import { initShopViewControls } from '../../lib/shop-view';
+    initShopViewControls();
+    document.addEventListener('astro:page-load', initShopViewControls);
+  </script>
 </BaseLayout>
