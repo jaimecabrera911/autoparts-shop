@@ -1,0 +1,29 @@
+---
+interface Props {
+  label: string;
+  value: string;
+  hint?: string;
+  trend?: string;
+  trendUp?: boolean;
+}
+
+const { label, value, hint, trend, trendUp } = Astro.props;
+---
+
+<div class="admin-card p-5">
+  <p class="text-sm font-medium text-[var(--color-muted)]">{label}</p>
+  <p class="mt-2 text-2xl font-semibold tabular-nums tracking-tight">{value}</p>
+  {
+    trend && (
+      <p
+        class:list={[
+          'mt-1 text-xs font-medium',
+          trendUp ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]',
+        ]}
+      >
+        {trend}
+      </p>
+    )
+  }
+  {hint && !trend && <p class="mt-1 text-xs text-[var(--color-muted)]">{hint}</p>}
+</div>

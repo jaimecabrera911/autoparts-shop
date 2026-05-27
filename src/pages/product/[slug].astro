@@ -1,0 +1,158 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import Button from '../../components/Button.astro';
+import ProductImage from '../../components/ProductImage.astro';
+import { getProductBySlug, formatPrice, products } from '../../data/products';
+import { categories } from '../../data/categories';
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug } }));
+}
+
+const { slug } = Astro.params;
+const product = getProductBySlug(slug!);
+
+if (!product) {
+  return Astro.redirect('/shop');
+}
+
+const catName = categories.find((c) => c.slug === product.category)?.name ?? product.category;
+const price = product.salePrice ?? product.price;
+---
+
+<BaseLayout title={product.name} description={product.description}>
+  <Breadcrumb
+    items={[
+      { label: 'Inicio', href: '/' },
+      { label: 'Tienda', href: '/shop' },
+      { label: catName, href: `/shop?category=${product.category}` },
+      { label: product.name },
+    ]}
+  />
+
+  <div class="grid gap-10 lg:grid-cols-2">
+    <div
+      class="overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg)] aspect-square"
+    >
+      <ProductImage src={product.image} alt={product.imageAlt ?? product.name} />
+    </div>
+
+    <div class="lg:sticky lg:top-24 lg:self-start">
+      <p class="text-sm text-[var(--color-muted)]">{product.brand}</p>
+      <h1 class="mt-1 text-2xl font-semibold leading-tight">{product.name}</h1>
+      <p class="mt-2 text-sm text-[var(--color-muted)]">
+        SKU {product.sku} ·
+        {
+          product.inStock ? (
+            <span class="text-[var(--color-success)]">En stock</span>
+          ) : (
+            <span class="text-[var(--color-danger)]">Agotado</span>
+          )
+        }
+      </p>
+
+      <div class="mt-4 flex items-baseline gap-3 tabular-nums">
+        <span class="text-3xl font-semibold">{formatPrice(price)}</span>
+        {
+          product.salePrice && (
+            <span class="text-lg text-[var(--color-muted)] line-through">
+              {formatPrice(product.price)}
+            </span>
+          )
+        }
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <button
+          type="button"
+          id="pdp-add-cart"
+          class="rounded-[var(--radius-sm)] bg-[var(--color-accent)] px-6 py-2.5 text-sm font-medium text-white hover:bg-[var(--color-accent-hover)] disabled:opacity-50"
+          data-product-id={product.id}
+          disabled={!product.inStock}
+        >
+          Añadir al carrito
+        </button>
+        <Button href="/checkout" variant="secondary" id="buy-now">Comprar ahora</Button>
+      </div>
+
+      <dl class="mt-8 grid gap-2 text-sm border-t border-[var(--color-border)] pt-6">
+        {
+          [
+            ['Marca', product.brand],
+            ['MPN', product.mpn],
+            ['EAN', product.ean],
+            ['Peso', product.weight],
+            ['Dimensiones', product.dimensions],
+          ].map(([k, v]) => (
+            <div class="grid grid-cols-2 gap-2">
+              <dt class="text-[var(--color-muted)]">{k}</dt>
+              <dd class="font-medium">{v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+
+  <div class="mt-12 border-t border-[var(--color-border)] pt-10">
+    <div class="flex gap-4 border-b border-[var(--color-border)] text-sm font-medium">
+      <span class="border-b-2 border-[var(--color-accent)] pb-2 text-[var(--color-accent)]">
+        Descripción
+      </span>
+      <span class="pb-2 text-[var(--color-muted)]">Compatibilidad</span>
+    </div>
+    <p class="mt-6 max-w-3xl text-[var(--color-muted)] leading-relaxed">{product.description}</p>
+
+    {
+      product.compatibility.length > 0 && (
+        <div class="mt-10 overflow-x-auto">
+          <h2 class="text-lg font-semibold">Vehículos compatibles</h2>
+          <table class="mt-4 w-full min-w-[600px] text-left text-sm">
+            <thead class="border-b border-[var(--color-border)] text-[var(--color-muted)]">
+              <tr>
+                <th class="py-2 pr-4">Marca</th>
+                <th class="py-2 pr-4">Modelo</th>
+                <th class="py-2 pr-4">Año</th>
+                <th class="py-2 pr-4">Motor</th>
+                <th class="py-2 pr-4">Transmisión</th>
+                <th class="py-2">Versión</th>
+              </tr>
+            </thead>
+            <tbody>
+              {product.compatibility.map((row) => (
+                <tr class="border-b border-[var(--color-border)]">
+                  <td class="py-2 pr-4">{row.make}</td>
+                  <td class="py-2 pr-4">{row.model}</td>
+                  <td class="py-2 pr-4">{row.year}</td>
+                  <td class="py-2 pr-4">{row.engine}</td>
+                  <td class="py-2 pr-4">{row.transmission}</td>
+                  <td class="py-2">{row.trim}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<script define:vars={{ productId: product.id, slug: product.slug, name: product.name, sku: product.sku, price, image: product.image }}>
+  import { addToCart } from '../../lib/cart';
+
+  const btn = document.getElementById('pdp-add-cart');
+  const buyNow = document.getElementById('buy-now');
+
+  btn?.addEventListener('click', () => {
+    addToCart({ productId, slug, name, sku, price, image });
+    btn.textContent = '✓ Añadido';
+    setTimeout(() => (btn.textContent = 'Añadir al carrito'), 1500);
+  });
+
+  buyNow?.addEventListener('click', (e) => {
+    e.preventDefault();
+    addToCart({ productId, slug, name, sku, price, image });
+    window.location.href = '/checkout';
+  });
+</script>

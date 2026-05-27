@@ -1,0 +1,35 @@
+---
+interface Chip {
+  key: string;
+  label: string;
+  href: string;
+}
+
+interface Props {
+  chips: Chip[];
+}
+
+const { chips } = Astro.props;
+---
+
+{
+  chips.length > 0 && (
+    <div class="mt-4 flex flex-wrap items-center gap-2">
+      <span class="text-xs font-medium text-[var(--color-muted)]">Filtros activos:</span>
+      {chips.map((chip) => (
+        <a
+          href={chip.href}
+          class="inline-flex items-center gap-1 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1 text-xs font-medium hover:border-[var(--color-accent)]"
+        >
+          {chip.label}
+          <span aria-hidden="true" class="text-[var(--color-muted)]">
+            ×
+          </span>
+        </a>
+      ))}
+      <a href="/shop" class="text-xs font-medium text-[var(--color-accent)]">
+        Limpiar todo
+      </a>
+    </div>
+  )
+}

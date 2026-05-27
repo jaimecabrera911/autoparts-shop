@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import Button from '../../components/Button.astro';
+---
+
+<BaseLayout title="Contacto" description="Contacta con soporte">
+  <Breadcrumb items={[{ label: 'Inicio', href: '/' }, { label: 'Contacto' }]} />
+  <h1 class="text-2xl font-semibold">Contacto</h1>
+  <p class="mt-2 text-[var(--color-muted)]">Horario: 8:00 – 22:00 · Tel. 6668 5555 (demo)</p>
+
+  <form class="mt-8 max-w-lg space-y-4">
+    <label class="block text-sm">
+      <span class="mb-1 block text-[var(--color-muted)]">Nombre</span>
+      <input type="text" class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+    </label>
+    <label class="block text-sm">
+      <span class="mb-1 block text-[var(--color-muted)]">Email</span>
+      <input type="email" class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+    </label>
+    <label class="block text-sm">
+      <span class="mb-1 block text-[var(--color-muted)]">VIN (opcional)</span>
+      <input type="text" class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+    </label>
+    <label class="block text-sm">
+      <span class="mb-1 block text-[var(--color-muted)]">Mensaje</span>
+      <textarea rows="4" class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2"></textarea>
+    </label>
+    <Button type="submit">Enviar</Button>
+  </form>
+</BaseLayout>

@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import { vehicleMakes } from '../../../data/categories';
+---
+
+<BaseLayout title="Mi garaje" description="Guarda tus vehículos">
+  <Breadcrumb
+    items={[
+      { label: 'Inicio', href: '/' },
+      { label: 'Mi cuenta', href: '/my-account' },
+      { label: 'Mi garaje' },
+    ]}
+  />
+  <h1 class="text-2xl font-semibold">Mi garaje</h1>
+  <p class="mt-2 text-sm text-[var(--color-muted)]">
+    Guarda tus vehículos para filtrar el catálogo por compatibilidad.
+  </p>
+
+  <form class="mt-8 max-w-md space-y-4 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+    <label class="block text-sm">
+      <span class="mb-1 block text-[var(--color-muted)]">Alias</span>
+      <input type="text" placeholder="Mi Golf" class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+    </label>
+    <label class="block text-sm">
+      <span class="mb-1 block text-[var(--color-muted)]">Marca</span>
+      <select class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2">
+        {vehicleMakes.map((m) => <option>{m}</option>)}
+      </select>
+    </label>
+    <label class="block text-sm">
+      <span class="mb-1 block text-[var(--color-muted)]">Modelo / Año</span>
+      <input type="text" placeholder="Corolla 2018" class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+    </label>
+    <button type="button" class="rounded-[var(--radius-sm)] bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white">
+      Guardar vehículo (demo)
+    </button>
+  </form>
+
+  <p class="mt-6 text-sm text-[var(--color-muted)]">
+    En producción: lista de vehículos guardados + botón “Usar para buscar” → `/shop?make=…`
+  </p>
+</BaseLayout>

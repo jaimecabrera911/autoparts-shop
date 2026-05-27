@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import Button from '../../components/Button.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { products } from '../../data/products';
+---
+
+<BaseLayout title="Carrito" description="Tu carrito de compras">
+  <Breadcrumb items={[{ label: 'Inicio', href: '/' }, { label: 'Carrito' }]} />
+  <h1 class="text-2xl font-semibold">Carrito</h1>
+
+  <div id="cart-empty" class="mt-10 hidden">
+    <p class="text-lg text-[var(--color-muted)]">Tu carrito está vacío.</p>
+    <Button href="/shop" class="mt-4">Explorar catálogo</Button>
+    <section class="mt-12">
+      <h2 class="text-lg font-semibold">Novedades</h2>
+      <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {products.filter((p) => p.salePrice).slice(0, 4).map((p) => <ProductCard product={p} />)}
+      </div>
+    </section>
+  </div>
+
+  <div id="cart-filled" class="mt-8 hidden">
+    <div class="grid gap-10 lg:grid-cols-3">
+      <div class="lg:col-span-2">
+        <div id="cart-lines" class="divide-y divide-[var(--color-border)] rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)]"></div>
+      </div>
+      <aside class="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 h-fit">
+        <h2 class="font-semibold">Resumen</h2>
+        <div class="mt-4 flex justify-between text-sm">
+          <span class="text-[var(--color-muted)]">Subtotal</span>
+          <span id="cart-subtotal" class="font-medium tabular-nums">$0.00</span>
+        </div>
+        <div class="mt-2 flex justify-between text-sm">
+          <span class="text-[var(--color-muted)]">Envío</span>
+          <span class="text-[var(--color-success)]">Gratis</span>
+        </div>
+        <div class="mt-4 flex justify-between border-t border-[var(--color-border)] pt-4 text-lg font-semibold">
+          <span>Total</span>
+          <span id="cart-total" class="tabular-nums">$0.00</span>
+        </div>
+        <Button href="/checkout" class="mt-6 w-full justify-center">Ir al checkout</Button>
+        <a href="/shop" class="mt-3 block text-center text-sm text-[var(--color-muted)]">
+          Seguir comprando
+        </a>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import {
+    getCart,
+    removeFromCart,
+    updateQty,
+    getCartSubtotal,
+  } from '../../lib/cart';
+
+  const fmt = (n: number) =>
+    new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'USD' }).format(n);
+
+  function render() {
+    const lines = getCart();
+    const empty = document.getElementById('cart-empty');
+    const filled = document.getElementById('cart-filled');
+    const container = document.getElementById('cart-lines');
+    const sub = document.getElementById('cart-subtotal');
+    const total = document.getElementById('cart-total');
+
+    if (!empty || !filled || !container) return;
+
+    if (lines.length === 0) {
+      empty.classList.remove('hidden');
+      filled.classList.add('hidden');
+      return;
+    }
+
+    empty.classList.add('hidden');
+    filled.classList.remove('hidden');
+
+    const subtotal = getCartSubtotal(lines);
+    if (sub) sub.textContent = fmt(subtotal);
+    if (total) total.textContent = fmt(subtotal);
+
+    container.innerHTML = lines
+      .map(
+        (line) => `
+      <div class="flex flex-col gap-4 p-4 sm:flex-row sm:items-center" data-id="${line.productId}">
+        <a href="/product/${line.slug}" class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded border border-[var(--color-border)] bg-[var(--color-bg)]">
+          ${line.image ? `<img src="${line.image}" alt="" class="h-full w-full object-contain p-1" loading="lazy" />` : '<span class="text-xs text-[var(--color-muted)]">—</span>'}
+        </a>
+        <div class="min-w-0 flex-1">
+          <a href="/product/${line.slug}" class="font-medium hover:text-[var(--color-accent)]">${line.name}</a>
+          <p class="text-sm text-[var(--color-muted)]">SKU ${line.sku}</p>
+          <p class="mt-1 font-medium tabular-nums">${fmt(line.price)}</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" class="qty-minus rounded border px-2 py-1 text-sm" data-id="${line.productId}">−</button>
+          <span class="w-8 text-center tabular-nums">${line.qty}</span>
+          <button type="button" class="qty-plus rounded border px-2 py-1 text-sm" data-id="${line.productId}">+</button>
+        </div>
+        <button type="button" class="remove text-sm text-[var(--color-danger)]" data-id="${line.productId}">Eliminar</button>
+      </div>
+    `,
+      )
+      .join('');
+
+    container.querySelectorAll('.qty-minus').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id')!;
+        const line = getCart().find((l) => l.productId === id);
+        if (line) updateQty(id, line.qty - 1);
+        render();
+      });
+    });
+    container.querySelectorAll('.qty-plus').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id')!;
+        const line = getCart().find((l) => l.productId === id);
+        if (line) updateQty(id, line.qty + 1);
+        render();
+      });
+    });
+    container.querySelectorAll('.remove').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        removeFromCart(btn.getAttribute('data-id')!);
+        render();
+      });
+    });
+  }
+
+  render();
+  window.addEventListener('cart-updated', render);
+  document.addEventListener('astro:page-load', render);
+</script>

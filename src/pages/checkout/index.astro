@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import Button from '../../components/Button.astro';
+---
+
+<BaseLayout title="Checkout" description="Finalizar compra">
+  <Breadcrumb
+    items={[
+      { label: 'Inicio', href: '/' },
+      { label: 'Carrito', href: '/cart' },
+      { label: 'Checkout' },
+    ]}
+  />
+  <h1 class="text-2xl font-semibold">Checkout</h1>
+  <p class="mt-1 text-sm text-[var(--color-muted)]">Compra como invitado — demo sin pago real.</p>
+
+  <div class="mt-8 grid gap-10 lg:grid-cols-5">
+    <form id="checkout-form" class="space-y-8 lg:col-span-3">
+      <fieldset class="space-y-4">
+        <legend class="text-lg font-semibold">Contacto</legend>
+        <label class="block text-sm">
+          <span class="mb-1 block text-[var(--color-muted)]">Email *</span>
+          <input
+            type="email"
+            name="email"
+            required
+            class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2"
+          />
+        </label>
+      </fieldset>
+
+      <fieldset class="space-y-4">
+        <legend class="text-lg font-semibold">Envío</legend>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="block text-sm">
+            <span class="mb-1 block text-[var(--color-muted)]">Nombre *</span>
+            <input type="text" name="firstName" required class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+          </label>
+          <label class="block text-sm">
+            <span class="mb-1 block text-[var(--color-muted)]">Apellido *</span>
+            <input type="text" name="lastName" required class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+          </label>
+        </div>
+        <label class="block text-sm">
+          <span class="mb-1 block text-[var(--color-muted)]">Dirección *</span>
+          <input type="text" name="address" required class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+        </label>
+        <div class="grid gap-4 sm:grid-cols-3">
+          <label class="block text-sm">
+            <span class="mb-1 block text-[var(--color-muted)]">Ciudad *</span>
+            <input type="text" name="city" required class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+          </label>
+          <label class="block text-sm">
+            <span class="mb-1 block text-[var(--color-muted)]">Código postal *</span>
+            <input type="text" name="zip" required class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+          </label>
+          <label class="block text-sm">
+            <span class="mb-1 block text-[var(--color-muted)]">Teléfono</span>
+            <input type="tel" name="phone" class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="space-y-3">
+        <legend class="text-lg font-semibold">Pago (demo)</legend>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="radio" name="payment" value="transfer" checked />
+          Transferencia bancaria
+        </label>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="radio" name="payment" value="cod" />
+          Contraentrega
+        </label>
+      </fieldset>
+
+      <div class="flex flex-wrap gap-3">
+        <Button type="submit">Confirmar pedido</Button>
+        <Button href="/cart" variant="secondary">Volver al carrito</Button>
+      </div>
+    </form>
+
+    <aside class="lg:col-span-2">
+      <div class="sticky top-24 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+        <h2 class="font-semibold">Resumen del pedido</h2>
+        <ul id="checkout-summary" class="mt-4 space-y-3 text-sm"></ul>
+        <div class="mt-4 flex justify-between border-t border-[var(--color-border)] pt-4 font-semibold">
+          <span>Total</span>
+          <span id="checkout-total" class="tabular-nums">$0.00</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div id="order-success" class="mt-10 hidden rounded-[var(--radius-md)] border border-[var(--color-success)] bg-green-50 p-6">
+    <h2 class="text-lg font-semibold text-[var(--color-success)]">¡Pedido confirmado!</h2>
+    <p class="mt-2 text-sm text-[var(--color-muted)]">
+      Demo: el pedido se simuló correctamente. Nº <span id="order-id"></span>
+    </p>
+    <Button href="/shop" class="mt-4">Seguir comprando</Button>
+  </div>
+</BaseLayout>
+
+<script>
+  import { getCart, getCartSubtotal, clearCart } from '../../lib/cart';
+
+  const fmt = (n: number) =>
+    new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'USD' }).format(n);
+
+  function renderSummary() {
+    const lines = getCart();
+    const list = document.getElementById('checkout-summary');
+    const totalEl = document.getElementById('checkout-total');
+    if (!list || !totalEl) return;
+
+    if (lines.length === 0) {
+      window.location.href = '/cart';
+      return;
+    }
+
+    list.innerHTML = lines
+      .map(
+        (l) =>
+          `<li class="flex justify-between gap-2"><span>${l.name} × ${l.qty}</span><span class="tabular-nums shrink-0">${fmt(l.price * l.qty)}</span></li>`,
+      )
+      .join('');
+    totalEl.textContent = fmt(getCartSubtotal(lines));
+  }
+
+  renderSummary();
+
+  document.getElementById('checkout-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const id = `AP-${Date.now().toString(36).toUpperCase()}`;
+    clearCart();
+    document.getElementById('checkout-form')?.classList.add('hidden');
+    document.querySelector('aside')?.classList.add('hidden');
+    const ok = document.getElementById('order-success');
+    const orderId = document.getElementById('order-id');
+    if (ok) ok.classList.remove('hidden');
+    if (orderId) orderId.textContent = id;
+    window.dispatchEvent(new CustomEvent('cart-updated'));
+  });
+
+  document.addEventListener('astro:page-load', renderSummary);
+</script>

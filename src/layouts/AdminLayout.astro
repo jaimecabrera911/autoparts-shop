@@ -1,0 +1,108 @@
+---
+import '../styles/global.css';
+import '../styles/admin.css';
+import AdminSidebar from '../components/admin/AdminSidebar.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Panel de administración AutoParts' } = Astro.props;
+const fullTitle = `${title} · Admin AutoParts`;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>{fullTitle}</title>
+  </head>
+  <body class="admin-shell">
+    <div class="flex min-h-dvh">
+      <AdminSidebar currentPath={currentPath} />
+      <div class="flex min-w-0 flex-1 flex-col lg:pl-[var(--admin-sidebar-w)]">
+        <header
+          class="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 px-4 py-3 backdrop-blur md:px-8"
+        >
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              id="admin-menu-toggle"
+              class="rounded-lg border border-[var(--color-border)] p-2 lg:hidden"
+              aria-label="Abrir menú"
+            >
+              ☰
+            </button>
+            <div>
+              <h1 class="text-lg font-semibold">{title}</h1>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <a
+              href="/"
+              target="_blank"
+              class="hidden text-sm text-[var(--color-muted)] hover:text-[var(--color-accent)] sm:inline"
+            >
+              Ver tienda ↗
+            </a>
+            <div
+              class="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-accent)] text-sm font-medium text-white"
+              title="Administrador demo"
+            >
+              AD
+            </div>
+          </div>
+        </header>
+        <main class="flex-1 p-4 md:p-8">
+          <slot />
+        </main>
+      </div>
+    </div>
+    <div
+      id="admin-sidebar-backdrop"
+      class="fixed inset-0 z-40 hidden bg-black/50 lg:hidden"
+      aria-hidden="true"
+    ></div>
+
+    <script>
+      const sidebar = document.getElementById('admin-sidebar');
+      const backdrop = document.getElementById('admin-sidebar-backdrop');
+      const toggle = document.getElementById('admin-menu-toggle');
+
+      function openSidebar() {
+        sidebar?.classList.remove('-translate-x-full');
+        backdrop?.classList.remove('hidden');
+      }
+      function closeSidebar() {
+        sidebar?.classList.add('-translate-x-full');
+        backdrop?.classList.add('hidden');
+      }
+
+      toggle?.addEventListener('click', () => {
+        if (sidebar?.classList.contains('-translate-x-full')) openSidebar();
+        else closeSidebar();
+      });
+      backdrop?.addEventListener('click', closeSidebar);
+
+      // Demo: requiere sesión (excepto login)
+      if (!window.location.pathname.startsWith('/admin/login')) {
+        const auth = sessionStorage.getItem('admin-auth');
+        if (auth !== 'demo') {
+          window.location.href = '/admin/login';
+        }
+      }
+    </script>
+  </body>
+</html>

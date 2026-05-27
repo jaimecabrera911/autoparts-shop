@@ -1,0 +1,70 @@
+---
+import type { ShopFilterState, SortOption } from '../../lib/shop-filters';
+import { buildShopUrl } from '../../lib/shop-filters';
+
+interface Props {
+  filters: ShopFilterState;
+  resultCount: number;
+}
+
+const { filters, resultCount } = Astro.props;
+
+const sortOptions: { value: SortOption; label: string }[] = [
+  { value: 'relevance', label: 'Relevancia' },
+  { value: 'price_asc', label: 'Precio: menor a mayor' },
+  { value: 'price_desc', label: 'Precio: mayor a menor' },
+  { value: 'name_asc', label: 'Nombre A–Z' },
+  { value: 'name_desc', label: 'Nombre Z–A' },
+  { value: 'newest', label: 'Novedades primero' },
+];
+---
+
+<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div class="flex flex-wrap items-center gap-3">
+    <button
+      type="button"
+      id="open-filters"
+      class="inline-flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-medium lg:hidden"
+    >
+      <span aria-hidden="true">☰</span>
+      Filtros
+    </button>
+    <p class="text-sm text-[var(--color-muted)]">
+      <span class="font-medium text-[var(--color-text)] tabular-nums">{resultCount}</span>
+      producto{resultCount !== 1 ? 's' : ''}
+    </p>
+  </div>
+
+  <form method="get" action="/shop" class="flex items-center gap-2">
+    {filters.q && <input type="hidden" name="q" value={filters.q} />}
+    {filters.category && <input type="hidden" name="category" value={filters.category} />}
+    {filters.brands.map((b) => <input type="hidden" name="brand" value={b} />)}
+    {filters.make && <input type="hidden" name="make" value={filters.make} />}
+    {filters.model && <input type="hidden" name="model" value={filters.model} />}
+    {filters.onSale && <input type="hidden" name="on_sale" value="1" />}
+    {filters.inStock && <input type="hidden" name="in_stock" value="1" />}
+    {filters.newOnly && <input type="hidden" name="new" value="1" />}
+    {filters.priceMin != null && (
+      <input type="hidden" name="price_min" value={String(filters.priceMin)} />
+    )}
+    {filters.priceMax != null && (
+      <input type="hidden" name="price_max" value={String(filters.priceMax)} />
+    )}
+
+    <label for="shop-sort" class="sr-only">Ordenar por</label>
+    <select
+      id="shop-sort"
+      name="sort"
+      class="rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-3 py-2 text-sm"
+      onchange="this.form.submit()"
+    >
+      {
+        sortOptions.map((opt) => (
+          <option value={opt.value} selected={filters.sort === opt.value}>
+            {opt.label}
+          </option>
+        ))
+      }
+    </select>
+  </form>
+</div>

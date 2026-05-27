@@ -1,0 +1,73 @@
+---
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+
+const nav = [
+  { href: '/admin', label: 'Dashboard', icon: '▣' },
+  { href: '/admin/orders', label: 'Pedidos', icon: '◎' },
+  { href: '/admin/products', label: 'Productos', icon: '▤' },
+  { href: '/admin/categories', label: 'Categorías', icon: '▦' },
+  { href: '/admin/customers', label: 'Clientes', icon: '◇' },
+  { href: '/admin/settings', label: 'Configuración', icon: '⚙' },
+];
+
+function isActive(href: string) {
+  if (href === '/admin') return currentPath === '/admin' || currentPath === '/admin/';
+  return currentPath.startsWith(href);
+}
+---
+
+<aside
+  id="admin-sidebar"
+  class="fixed inset-y-0 left-0 z-50 flex w-[var(--admin-sidebar-w)] -translate-x-full flex-col bg-[var(--admin-sidebar)] transition-transform duration-200 lg:translate-x-0"
+>
+  <div class="flex h-14 items-center gap-2 border-b border-white/10 px-5">
+    <a href="/admin" class="text-lg font-semibold text-white">
+      Auto<span class="text-teal-400">Parts</span>
+    </a>
+    <span class="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-medium uppercase text-slate-400">
+      Admin
+    </span>
+  </div>
+
+  <nav class="flex-1 space-y-1 overflow-y-auto p-3" aria-label="Administración">
+    {
+      nav.map((item) => (
+        <a
+          href={item.href}
+          class:list={['admin-sidebar-link', isActive(item.href) && 'is-active']}
+        >
+          <span aria-hidden="true" class="w-5 text-center text-sm opacity-80">
+            {item.icon}
+          </span>
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="border-t border-white/10 p-3">
+    <a href="/" class="admin-sidebar-link text-sm" target="_blank">
+      <span class="w-5 text-center">↗</span>
+      Ir a la tienda
+    </a>
+    <button
+      type="button"
+      id="admin-logout"
+      class="admin-sidebar-link mt-1 w-full text-left text-sm text-red-300 hover:text-red-200"
+    >
+      <span class="w-5 text-center">⎋</span>
+      Cerrar sesión
+    </button>
+  </div>
+</aside>
+
+<script>
+  document.getElementById('admin-logout')?.addEventListener('click', () => {
+    sessionStorage.removeItem('admin-auth');
+    window.location.href = '/admin/login';
+  });
+</script>

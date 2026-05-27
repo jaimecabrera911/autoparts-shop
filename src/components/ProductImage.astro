@@ -1,0 +1,17 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+}
+
+const { src, alt, class: className = '' } = Astro.props;
+---
+
+<img
+  src={src}
+  alt={alt}
+  loading="lazy"
+  decoding="async"
+  class:list={['h-full w-full object-contain p-4', className]}
+/>

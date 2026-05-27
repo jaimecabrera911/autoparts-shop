@@ -1,0 +1,127 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import StatCard from '../../components/admin/StatCard.astro';
+import {
+  getDashboardStats,
+  getRecentActivity,
+  getTopProducts,
+  adminOrders,
+  orderStatusLabels,
+  orderStatusColors,
+  formatPrice,
+} from '../../data/admin-mock';
+
+const stats = getDashboardStats();
+const activity = getRecentActivity();
+const topProducts = getTopProducts();
+const recentOrders = adminOrders.slice(0, 5);
+---
+
+<AdminLayout title="Dashboard">
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <StatCard
+      label="Ingresos (pedidos demo)"
+      value={formatPrice(stats.revenueMonth)}
+      trend="+12% vs mes anterior"
+      trendUp={true}
+    />
+    <StatCard label="Pedidos" value={String(stats.totalOrders)} hint={`${stats.pendingOrders} pendientes`} />
+    <StatCard label="Productos" value={String(stats.totalProducts)} hint={`${stats.outOfStock} agotados`} />
+    <StatCard label="Clientes" value={String(stats.totalCustomers)} hint={`${stats.categoriesCount} categorías`} />
+  </div>
+
+  <div class="mt-8 grid gap-6 lg:grid-cols-3">
+    <section class="admin-card lg:col-span-2">
+      <div class="flex items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
+        <h2 class="font-semibold">Pedidos recientes</h2>
+        <a href="/admin/orders" class="text-sm font-medium text-[var(--color-accent)]">Ver todos</a>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="admin-table w-full">
+          <thead>
+            <tr class="border-b border-[var(--color-border)]">
+              <th class="px-5 py-3">Pedido</th>
+              <th class="px-5 py-3">Cliente</th>
+              <th class="px-5 py-3">Estado</th>
+              <th class="px-5 py-3 text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              recentOrders.map((order) => (
+                <tr>
+                  <td class="px-5 py-3">
+                    <a href={`/admin/orders/${order.id}`} class="font-medium hover:text-[var(--color-accent)]">
+                      {order.id}
+                    </a>
+                  </td>
+                  <td class="px-5 py-3 text-[var(--color-muted)]">{order.customer}</td>
+                  <td class="px-5 py-3">
+                    <span
+                      class:list={[
+                        'inline-block rounded-full px-2 py-0.5 text-xs font-medium',
+                        orderStatusColors[order.status],
+                      ]}
+                    >
+                      {orderStatusLabels[order.status]}
+                    </span>
+                  </td>
+                  <td class="px-5 py-3 text-right font-medium tabular-nums">
+                    {formatPrice(order.total)}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="admin-card">
+      <div class="border-b border-[var(--color-border)] px-5 py-4">
+        <h2 class="font-semibold">Actividad reciente</h2>
+      </div>
+      <ul class="divide-y divide-[var(--color-border)] px-5 py-2">
+        {
+          activity.map((item) => (
+            <li class="py-3 text-sm">
+              <p>{item.text}</p>
+              <p class="mt-0.5 text-xs text-[var(--color-muted)]">{item.time}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+
+  <section class="admin-card mt-6">
+    <div class="flex items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
+      <h2 class="font-semibold">Productos destacados</h2>
+      <a href="/admin/products" class="text-sm font-medium text-[var(--color-accent)]">Gestionar</a>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="admin-table w-full">
+        <thead>
+          <tr>
+            <th class="px-5 py-3">Producto</th>
+            <th class="px-5 py-3">SKU</th>
+            <th class="px-5 py-3">Precio</th>
+            <th class="px-5 py-3">Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            topProducts.map((p) => (
+              <tr>
+                <td class="px-5 py-3 font-medium">{p.name}</td>
+                <td class="px-5 py-3 text-[var(--color-muted)]">{p.sku}</td>
+                <td class="px-5 py-3 tabular-nums">{p.price}</td>
+                <td class="px-5 py-3">{p.stock}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</AdminLayout>

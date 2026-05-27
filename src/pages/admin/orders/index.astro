@@ -1,0 +1,108 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import {
+  adminOrders,
+  orderStatusLabels,
+  orderStatusColors,
+  formatPrice,
+} from '../../../data/admin-mock';
+import type { OrderStatus } from '../../../data/admin-mock';
+
+const statusFilter = Astro.url.searchParams.get('status') as OrderStatus | null;
+const q = Astro.url.searchParams.get('q')?.toLowerCase() ?? '';
+
+let orders = [...adminOrders];
+if (statusFilter && orderStatusLabels[statusFilter]) {
+  orders = orders.filter((o) => o.status === statusFilter);
+}
+if (q) {
+  orders = orders.filter(
+    (o) =>
+      o.id.toLowerCase().includes(q) ||
+      o.customer.toLowerCase().includes(q) ||
+      o.email.toLowerCase().includes(q),
+  );
+}
+---
+
+<AdminLayout title="Pedidos">
+  <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <p class="text-sm text-[var(--color-muted)]">{orders.length} pedidos</p>
+    <form method="get" class="flex flex-wrap gap-2">
+      <input
+        type="search"
+        name="q"
+        value={q}
+        placeholder="Buscar pedido o cliente…"
+        class="rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+      />
+      <select
+        name="status"
+        class="rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+        onchange="this.form.submit()"
+      >
+        <option value="">Todos los estados</option>
+        {
+          Object.entries(orderStatusLabels).map(([key, label]) => (
+            <option value={key} selected={statusFilter === key}>
+              {label}
+            </option>
+          ))
+        }
+      </select>
+      <button
+        type="submit"
+        class="rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white"
+      >
+        Filtrar
+      </button>
+    </form>
+  </div>
+
+  <div class="admin-card overflow-hidden">
+    <table class="admin-table w-full">
+      <thead>
+        <tr class="border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+          <th class="px-5 py-3">ID</th>
+          <th class="px-5 py-3">Fecha</th>
+          <th class="px-5 py-3">Cliente</th>
+          <th class="px-5 py-3">Estado</th>
+          <th class="px-5 py-3 text-right">Total</th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          orders.map((order) => (
+            <tr>
+              <td class="px-5 py-3 font-medium">{order.id}</td>
+              <td class="px-5 py-3 text-[var(--color-muted)]">{order.date}</td>
+              <td class="px-5 py-3">
+                <p>{order.customer}</p>
+                <p class="text-xs text-[var(--color-muted)]">{order.email}</p>
+              </td>
+              <td class="px-5 py-3">
+                <span
+                  class:list={[
+                    'inline-block rounded-full px-2 py-0.5 text-xs font-medium',
+                    orderStatusColors[order.status],
+                  ]}
+                >
+                  {orderStatusLabels[order.status]}
+                </span>
+              </td>
+              <td class="px-5 py-3 text-right font-medium tabular-nums">
+                {formatPrice(order.total)}
+              </td>
+              <td class="px-5 py-3 text-right">
+                <a href={`/admin/orders/${order.id}`} class="text-sm font-medium text-[var(--color-accent)]">
+                  Ver →
+                </a>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>

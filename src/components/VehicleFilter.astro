@@ -1,0 +1,66 @@
+---
+import { vehicleMakes } from '../data/categories';
+---
+
+<section
+  class="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-sm)]"
+  aria-labelledby="vehicle-filter-title"
+>
+  <h2 id="vehicle-filter-title" class="text-lg font-semibold">Buscar por vehículo</h2>
+  <p class="mt-1 text-sm text-[var(--color-muted)]">
+    Selecciona marca y modelo para ver piezas compatibles.
+  </p>
+  <form action="/shop" method="get" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <label class="block text-sm">
+      <span class="mb-1 block text-[var(--color-muted)]">Marca</span>
+      <select
+        name="make"
+        class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-3 py-2 text-sm"
+      >
+        <option value="">Seleccionar</option>
+        {vehicleMakes.map((make) => <option value={make}>{make}</option>)}
+      </select>
+    </label>
+    <label class="block text-sm">
+      <span class="mb-1 block text-[var(--color-muted)]">Modelo</span>
+      <input
+        type="text"
+        name="model"
+        placeholder="Ej. Corolla"
+        class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2 text-sm"
+      />
+    </label>
+    <label class="block text-sm">
+      <span class="mb-1 block text-[var(--color-muted)]">Año</span>
+      <input
+        type="text"
+        name="year"
+        placeholder="Ej. 2018"
+        class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2 text-sm"
+      />
+    </label>
+    <label class="block text-sm sm:col-span-2 lg:col-span-3">
+      <span class="mb-1 block text-[var(--color-muted)]">VIN (opcional)</span>
+      <input
+        type="text"
+        name="vin"
+        placeholder="Número de bastidor"
+        class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2 text-sm"
+      />
+    </label>
+    <div class="flex flex-wrap gap-2 sm:col-span-2 lg:col-span-3">
+      <button
+        type="submit"
+        class="rounded-[var(--radius-sm)] bg-[var(--color-accent)] px-5 py-2.5 text-sm font-medium text-white hover:bg-[var(--color-accent-hover)]"
+      >
+        Aplicar filtro
+      </button>
+      <a
+        href="/shop"
+        class="rounded-[var(--radius-sm)] border border-[var(--color-border)] px-5 py-2.5 text-sm font-medium text-[var(--color-text)] hover:border-[var(--color-accent)]"
+      >
+        Limpiar
+      </a>
+    </div>
+  </form>
+</section>

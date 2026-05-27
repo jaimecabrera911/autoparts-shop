@@ -1,0 +1,294 @@
+---
+import type { ShopFilterState } from '../../lib/shop-filters';
+import { categories, vehicleMakes } from '../../data/categories';
+
+interface Props {
+  filters: ShopFilterState;
+  brands: string[];
+  brandCounts: Record<string, number>;
+  categoryCounts: Record<string, number>;
+  catalogPriceMin: number;
+  catalogPriceMax: number;
+  resultCount: number;
+  facetTotal: number;
+}
+
+const {
+  filters,
+  brands,
+  brandCounts,
+  categoryCounts,
+  catalogPriceMin,
+  catalogPriceMax,
+  resultCount,
+  facetTotal,
+} = Astro.props;
+
+const priceMinVal = filters.priceMin ?? catalogPriceMin;
+const priceMaxVal = filters.priceMax ?? catalogPriceMax;
+---
+
+<aside
+  id="shop-filters"
+  class="shop-filters-panel fixed inset-y-0 left-0 z-50 w-full max-w-sm -translate-x-full overflow-y-auto border-r border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-xl transition-transform duration-200 lg:static lg:z-auto lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none"
+  aria-label="Filtros de búsqueda"
+>
+  <div class="flex items-center justify-between lg:hidden">
+    <h2 class="text-lg font-semibold">Filtros</h2>
+    <button
+      type="button"
+      id="close-filters"
+      class="rounded-[var(--radius-sm)] p-2 text-[var(--color-muted)] hover:bg-[var(--color-bg)]"
+      aria-label="Cerrar filtros"
+    >
+      ✕
+    </button>
+  </div>
+
+  <p class="mt-2 text-sm text-[var(--color-muted)] lg:mt-0">
+    <span class="font-medium text-[var(--color-text)]">{resultCount}</span> resultados
+  </p>
+
+  <form method="get" action="/shop" class="mt-6 space-y-8">
+    {filters.sort !== 'relevance' && <input type="hidden" name="sort" value={filters.sort} />}
+
+    <!-- Búsqueda en tienda -->
+    <fieldset>
+      <legend class="text-sm font-semibold">Buscar en tienda</legend>
+      <input
+        type="search"
+        name="q"
+        value={filters.q}
+        placeholder="Nombre, SKU, marca…"
+        class="mt-2 w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-3 py-2 text-sm"
+      />
+    </fieldset>
+
+    <!-- Vehículo -->
+    <fieldset>
+      <legend class="text-sm font-semibold">Compatibilidad vehículo</legend>
+      <div class="mt-2 space-y-2">
+        <select
+          name="make"
+          class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-3 py-2 text-sm"
+        >
+          <option value="">Todas las marcas</option>
+          {
+            vehicleMakes.map((make) => (
+              <option value={make} selected={filters.make === make}>
+                {make}
+              </option>
+            ))
+          }
+        </select>
+        <input
+          type="text"
+          name="model"
+          value={filters.model}
+          placeholder="Modelo (ej. A4, Corolla)"
+          class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2 text-sm"
+        />
+      </div>
+    </fieldset>
+
+    <!-- Categoría -->
+    <fieldset>
+      <legend class="text-sm font-semibold">Categoría</legend>
+      <ul class="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm">
+        <li>
+          <label class="flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 hover:bg-[var(--color-bg)]">
+            <span class="flex items-center gap-2">
+              <input
+                type="radio"
+                name="category"
+                value=""
+                checked={!filters.category}
+                class="accent-[var(--color-accent)]"
+              />
+              Todas
+            </span>
+            <span class="text-xs text-[var(--color-muted)] tabular-nums">
+              {facetTotal}
+            </span>
+          </label>
+        </li>
+        {
+          categories.map((cat) => (
+            <li>
+              <label class="flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 hover:bg-[var(--color-bg)]">
+                <span class="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="category"
+                    value={cat.slug}
+                    checked={filters.category === cat.slug}
+                    class="accent-[var(--color-accent)]"
+                  />
+                  {cat.name}
+                </span>
+                <span class="text-xs text-[var(--color-muted)] tabular-nums">
+                  {categoryCounts[cat.slug] ?? 0}
+                </span>
+              </label>
+            </li>
+          ))
+        }
+      </ul>
+    </fieldset>
+
+    <!-- Marca repuesto -->
+    <fieldset>
+      <legend class="text-sm font-semibold">Marca del repuesto</legend>
+      <ul class="mt-2 max-h-40 space-y-1 overflow-y-auto text-sm">
+        {
+          brands.map((brand) => (
+            <li>
+              <label class="flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 hover:bg-[var(--color-bg)]">
+                <span class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="brand"
+                    value={brand}
+                    checked={filters.brands.includes(brand)}
+                    class="accent-[var(--color-accent)]"
+                  />
+                  {brand}
+                </span>
+                <span class="text-xs text-[var(--color-muted)] tabular-nums">
+                  {brandCounts[brand] ?? 0}
+                </span>
+              </label>
+            </li>
+          ))
+        }
+      </ul>
+    </fieldset>
+
+    <!-- Precio -->
+    <fieldset>
+      <legend class="text-sm font-semibold">Rango de precio (USD)</legend>
+      <div class="mt-2 grid grid-cols-2 gap-2">
+        <label class="text-xs text-[var(--color-muted)]">
+          Mín.
+          <input
+            type="number"
+            name="price_min"
+            min={catalogPriceMin}
+            max={catalogPriceMax}
+            step="0.01"
+            value={filters.priceMin ?? ''}
+            placeholder={String(catalogPriceMin)}
+            class="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-2 py-1.5 text-sm tabular-nums"
+          />
+        </label>
+        <label class="text-xs text-[var(--color-muted)]">
+          Máx.
+          <input
+            type="number"
+            name="price_max"
+            min={catalogPriceMin}
+            max={catalogPriceMax}
+            step="0.01"
+            value={filters.priceMax ?? ''}
+            placeholder={String(catalogPriceMax)}
+            class="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-2 py-1.5 text-sm tabular-nums"
+          />
+        </label>
+      </div>
+      <p class="mt-1 text-xs text-[var(--color-muted)]">
+        Catálogo: ${catalogPriceMin} – ${catalogPriceMax}
+      </p>
+    </fieldset>
+
+    <!-- Estado / promos -->
+    <fieldset>
+      <legend class="text-sm font-semibold">Disponibilidad y promos</legend>
+      <ul class="mt-2 space-y-2 text-sm">
+        <li>
+          <label class="flex cursor-pointer items-center gap-2">
+            <input
+              type="checkbox"
+              name="on_sale"
+              value="1"
+              checked={filters.onSale}
+              class="accent-[var(--color-accent)]"
+            />
+            Solo en oferta
+          </label>
+        </li>
+        <li>
+          <label class="flex cursor-pointer items-center gap-2">
+            <input
+              type="checkbox"
+              name="in_stock"
+              value="1"
+              checked={filters.inStock}
+              class="accent-[var(--color-accent)]"
+            />
+            Solo en stock
+          </label>
+        </li>
+        <li>
+          <label class="flex cursor-pointer items-center gap-2">
+            <input
+              type="checkbox"
+              name="new"
+              value="1"
+              checked={filters.newOnly}
+              class="accent-[var(--color-accent)]"
+            />
+            Solo novedades
+          </label>
+        </li>
+      </ul>
+    </fieldset>
+
+    <div class="flex flex-col gap-2 pt-2">
+      <button
+        type="submit"
+        class="w-full rounded-[var(--radius-sm)] bg-[var(--color-accent)] py-2.5 text-sm font-medium text-white hover:bg-[var(--color-accent-hover)]"
+      >
+        Aplicar filtros
+      </button>
+      <a
+        href="/shop"
+        class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] py-2.5 text-center text-sm font-medium hover:border-[var(--color-accent)]"
+      >
+        Limpiar todo
+      </a>
+    </div>
+  </form>
+</aside>
+
+<div
+  id="filters-backdrop"
+  class="fixed inset-0 z-40 hidden bg-black/40 lg:hidden"
+  aria-hidden="true"
+></div>
+
+<script>
+  const panel = document.getElementById('shop-filters');
+  const backdrop = document.getElementById('filters-backdrop');
+  const openBtn = document.getElementById('open-filters');
+  const closeBtn = document.getElementById('close-filters');
+
+  function openFilters() {
+    panel?.classList.remove('-translate-x-full');
+    backdrop?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeFilters() {
+    panel?.classList.add('-translate-x-full');
+    backdrop?.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  openBtn?.addEventListener('click', openFilters);
+  closeBtn?.addEventListener('click', closeFilters);
+  backdrop?.addEventListener('click', closeFilters);
+
+  document.addEventListener('astro:page-load', () => {
+    closeFilters();
+  });
+</script>

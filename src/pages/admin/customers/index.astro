@@ -1,0 +1,59 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { adminCustomers, formatPrice } from '../../../data/admin-mock';
+
+const q = Astro.url.searchParams.get('q')?.toLowerCase() ?? '';
+let customers = [...adminCustomers];
+if (q) {
+  customers = customers.filter(
+    (c) =>
+      c.name.toLowerCase().includes(q) ||
+      c.email.toLowerCase().includes(q),
+  );
+}
+---
+
+<AdminLayout title="Clientes">
+  <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <p class="text-sm text-[var(--color-muted)]">{customers.length} clientes</p>
+    <form method="get">
+      <input
+        type="search"
+        name="q"
+        value={q}
+        placeholder="Buscar por nombre o email…"
+        class="w-full max-w-xs rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm sm:w-72"
+      />
+    </form>
+  </div>
+
+  <div class="admin-card overflow-hidden">
+    <table class="admin-table w-full">
+      <thead>
+        <tr class="border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+          <th class="px-5 py-3">Cliente</th>
+          <th class="px-5 py-3">Pedidos</th>
+          <th class="px-5 py-3 text-right">Total gastado</th>
+          <th class="px-5 py-3">Registro</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          customers.map((c) => (
+            <tr>
+              <td class="px-5 py-3">
+                <p class="font-medium">{c.name}</p>
+                <p class="text-xs text-[var(--color-muted)]">{c.email}</p>
+              </td>
+              <td class="px-5 py-3 tabular-nums">{c.orders}</td>
+              <td class="px-5 py-3 text-right font-medium tabular-nums">
+                {formatPrice(c.totalSpent)}
+              </td>
+              <td class="px-5 py-3 text-[var(--color-muted)]">{c.joined}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>

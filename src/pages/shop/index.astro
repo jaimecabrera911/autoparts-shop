@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import ShopFilters from '../../components/shop/ShopFilters.astro';
+import ShopToolbar from '../../components/shop/ShopToolbar.astro';
+import ActiveFilterChips from '../../components/shop/ActiveFilterChips.astro';
+import { products } from '../../data/products';
+import { categories } from '../../data/categories';
+import {
+  parseShopFilters,
+  filterProducts,
+  getCatalogMeta,
+  countByCategory,
+  countByBrand,
+  getActiveFilterLabels,
+} from '../../lib/shop-filters';
+
+const filters = parseShopFilters(Astro.url.searchParams);
+const filtered = filterProducts(products, filters);
+const meta = getCatalogMeta();
+
+const facetBase = filterProducts(products, {
+  ...filters,
+  category: '',
+  brands: [],
+  onSale: false,
+  inStock: false,
+  newOnly: false,
+  priceMin: null,
+  priceMax: null,
+});
+
+const categoryCounts = countByCategory(facetBase);
+const brandCounts = countByBrand(facetBase, filters.category || undefined);
+
+const categoryName = categories.find((c) => c.slug === filters.category)?.name;
+const activeChips = getActiveFilterLabels(filters, categoryName);
+---
+
+<BaseLayout title="Tienda" description="Catálogo de repuestos con filtros avanzados">
+  <Breadcrumb items={[{ label: 'Inicio', href: '/' }, { label: 'Tienda' }]} />
+
+  <div class="flex items-end justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Tienda</h1>
+      <p class="mt-1 text-sm text-[var(--color-muted)]">
+        Filtros por vehículo, categoría, marca, precio y disponibilidad.
+      </p>
+    </div>
+  </div>
+
+  <ActiveFilterChips chips={activeChips} />
+
+  <div class="mt-8 flex flex-col gap-8 lg:flex-row lg:items-start">
+    <div class="lg:w-72 shrink-0">
+      <ShopFilters
+        filters={filters}
+        brands={meta.brands}
+        brandCounts={brandCounts}
+        categoryCounts={categoryCounts}
+        catalogPriceMin={meta.priceMin}
+        catalogPriceMax={meta.priceMax}
+        resultCount={filtered.length}
+        facetTotal={facetBase.length}
+      />
+    </div>
+
+    <div class="min-w-0 flex-1">
+      <ShopToolbar filters={filters} resultCount={filtered.length} />
+
+      {
+        filtered.length === 0 ? (
+          <div class="mt-16 rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] p-12 text-center">
+            <p class="text-lg font-medium">No hay productos con estos filtros</p>
+            <p class="mt-2 text-sm text-[var(--color-muted)]">
+              Prueba ampliar el rango de precio o quitar algún filtro.
+            </p>
+            <a
+              href="/shop"
+              class="mt-6 inline-block rounded-[var(--radius-sm)] bg-[var(--color-accent)] px-5 py-2.5 text-sm font-medium text-white"
+            >
+              Ver todo el catálogo
+            </a>
+          </div>
+        ) : (
+          <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((product) => (
+              <ProductCard product={product} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>

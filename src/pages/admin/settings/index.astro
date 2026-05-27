@@ -1,0 +1,85 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Configuración">
+  <div class="max-w-2xl space-y-6">
+    <section class="admin-card p-5">
+      <h2 class="font-semibold">Tienda</h2>
+      <form class="mt-4 space-y-4">
+        <label class="block text-sm">
+          <span class="mb-1 block text-[var(--color-muted)]">Nombre de la tienda</span>
+          <input
+            type="text"
+            value="AutoParts"
+            class="w-full rounded-lg border border-[var(--color-border)] px-3 py-2"
+          />
+        </label>
+        <label class="block text-sm">
+          <span class="mb-1 block text-[var(--color-muted)]">Email de contacto</span>
+          <input
+            type="email"
+            value="ventas@autoparts.demo"
+            class="w-full rounded-lg border border-[var(--color-border)] px-3 py-2"
+          />
+        </label>
+        <label class="block text-sm">
+          <span class="mb-1 block text-[var(--color-muted)]">Moneda</span>
+          <select class="w-full rounded-lg border border-[var(--color-border)] px-3 py-2">
+            <option selected>COP — Peso colombiano</option>
+            <option>USD — Dólar</option>
+            <option>EUR — Euro</option>
+          </select>
+        </label>
+      </form>
+    </section>
+
+    <section class="admin-card p-5">
+      <h2 class="font-semibold">Envíos y pagos (demo)</h2>
+      <div class="mt-4 space-y-3 text-sm">
+        <label class="flex items-center gap-2">
+          <input type="checkbox" checked class="rounded" />
+          Envío estándar (3–5 días)
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" checked class="rounded" />
+          Retiro en tienda
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" class="rounded" />
+          Pago contra entrega
+        </label>
+      </div>
+    </section>
+
+    <section class="admin-card border-amber-200 bg-amber-50 p-5">
+      <h2 class="font-semibold text-amber-900">Panel de demostración</h2>
+      <p class="mt-2 text-sm text-amber-800">
+        Los cambios en esta pantalla no se persisten. La autenticación usa
+        <code class="rounded bg-white/80 px-1">sessionStorage</code> con clave
+        <code class="rounded bg-white/80 px-1">admin-auth</code>.
+      </p>
+      <button
+        type="button"
+        id="admin-logout"
+        class="mt-4 rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-medium text-amber-900 hover:bg-amber-100"
+      >
+        Cerrar sesión
+      </button>
+    </section>
+
+    <button
+      type="button"
+      class="rounded-lg bg-[var(--color-accent)] px-6 py-2.5 text-sm font-medium text-white"
+    >
+      Guardar configuración (demo)
+    </button>
+  </div>
+
+  <script>
+    document.getElementById('admin-logout')?.addEventListener('click', () => {
+      sessionStorage.removeItem('admin-auth');
+      window.location.href = '/admin/login';
+    });
+  </script>
+</AdminLayout>

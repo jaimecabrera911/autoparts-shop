@@ -1,0 +1,51 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { categories } from '../../../data/categories';
+import { products } from '../../../data/products';
+
+const rows = categories.map((cat) => ({
+  ...cat,
+  count: products.filter((p) => p.category === cat.slug || p.category === cat.name).length,
+}));
+---
+
+<AdminLayout title="Categorías">
+  <div class="mb-6 flex items-center justify-between">
+    <p class="text-sm text-[var(--color-muted)]">{rows.length} categorías</p>
+    <button
+      type="button"
+      class="rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white"
+    >
+      + Nueva categoría
+    </button>
+  </div>
+
+  <div class="admin-card overflow-hidden">
+    <table class="admin-table w-full">
+      <thead>
+        <tr class="border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+          <th class="px-5 py-3">Nombre</th>
+          <th class="px-5 py-3">Slug</th>
+          <th class="px-5 py-3">Productos</th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((cat) => (
+            <tr>
+              <td class="px-5 py-3 font-medium">{cat.name}</td>
+              <td class="px-5 py-3 text-[var(--color-muted)]">{cat.slug}</td>
+              <td class="px-5 py-3 tabular-nums">{cat.count}</td>
+              <td class="px-5 py-3 text-right">
+                <a href={`/catalog?category=${cat.slug}`} class="text-sm text-[var(--color-accent)]" target="_blank">
+                  Ver en tienda
+                </a>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>

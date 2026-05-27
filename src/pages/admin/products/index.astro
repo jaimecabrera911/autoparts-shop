@@ -1,0 +1,107 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { products } from '../../../data/products';
+import { formatPrice } from '../../../data/admin-mock';
+
+const q = Astro.url.searchParams.get('q')?.toLowerCase() ?? '';
+const category = Astro.url.searchParams.get('category') ?? '';
+
+let list = [...products];
+if (q) {
+  list = list.filter(
+    (p) =>
+      p.name.toLowerCase().includes(q) ||
+      p.sku.toLowerCase().includes(q) ||
+      p.slug.toLowerCase().includes(q),
+  );
+}
+if (category) {
+  list = list.filter((p) => p.category === category);
+}
+
+const categories = [...new Set(products.map((p) => p.category))].sort();
+---
+
+<AdminLayout title="Productos">
+  <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <p class="text-sm text-[var(--color-muted)]">{list.length} de {products.length} productos</p>
+    <form method="get" class="flex flex-wrap gap-2">
+      <input
+        type="search"
+        name="q"
+        value={q}
+        placeholder="Buscar nombre o SKU…"
+        class="rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+      />
+      <select name="category" class="rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm">
+        <option value="">Todas las categorías</option>
+        {
+          categories.map((c) => (
+            <option value={c} selected={category === c}>
+              {c}
+            </option>
+          ))
+        }
+      </select>
+      <button
+        type="submit"
+        class="rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-medium text-white"
+      >
+        Filtrar
+      </button>
+    </form>
+  </div>
+
+  <div class="admin-card overflow-hidden">
+    <table class="admin-table w-full">
+      <thead>
+        <tr class="border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+          <th class="px-5 py-3">Producto</th>
+          <th class="px-5 py-3">SKU</th>
+          <th class="px-5 py-3">Categoría</th>
+          <th class="px-5 py-3">Marca</th>
+          <th class="px-5 py-3 text-right">Precio</th>
+          <th class="px-5 py-3">Stock</th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          list.map((p) => (
+            <tr>
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-3">
+                  <img
+                    src={p.image}
+                    alt=""
+                    width="40"
+                    height="40"
+                    class="h-10 w-10 rounded object-cover bg-gray-100"
+                    loading="lazy"
+                  />
+                  <span class="font-medium">{p.name}</span>
+                </div>
+              </td>
+              <td class="px-5 py-3 text-[var(--color-muted)]">{p.sku}</td>
+              <td class="px-5 py-3">{p.category}</td>
+              <td class="px-5 py-3">{p.brand}</td>
+              <td class="px-5 py-3 text-right tabular-nums">{formatPrice(p.price)}</td>
+              <td class="px-5 py-3">
+                {p.inStock ? (
+                  <span class="text-green-700">En stock</span>
+                ) : (
+                  <span class="text-red-600">Agotado</span>
+                )}
+              </td>
+              <td class="px-5 py-3 text-right">
+                <a href={`/admin/products/${p.id}`} class="text-sm font-medium text-[var(--color-accent)]">
+                  Editar →
+                </a>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>

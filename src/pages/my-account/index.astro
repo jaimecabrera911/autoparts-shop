@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import Button from '../../components/Button.astro';
+---
+
+<BaseLayout title="Mi cuenta" description="Iniciar sesión o registrarse">
+  <Breadcrumb items={[{ label: 'Inicio', href: '/' }, { label: 'Mi cuenta' }]} />
+  <h1 class="text-2xl font-semibold">Mi cuenta</h1>
+
+  <div class="mt-8 grid gap-8 md:grid-cols-2 max-w-3xl">
+    <section class="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+      <h2 class="font-semibold">Iniciar sesión</h2>
+      <form class="mt-4 space-y-3" onsubmit="return false;">
+        <label class="block text-sm">
+          <span class="mb-1 block text-[var(--color-muted)]">Email</span>
+          <input type="email" class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+        </label>
+        <label class="block text-sm">
+          <span class="mb-1 block text-[var(--color-muted)]">Contraseña</span>
+          <input type="password" class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+        </label>
+        <Button type="submit" class="w-full justify-center">Entrar</Button>
+      </form>
+    </section>
+
+    <section class="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+      <h2 class="font-semibold">Registro</h2>
+      <p class="mt-2 text-sm text-[var(--color-muted)]">
+        Te enviaremos un enlace para crear tu contraseña.
+      </p>
+      <form class="mt-4 space-y-3" onsubmit="return false;">
+        <label class="block text-sm">
+          <span class="mb-1 block text-[var(--color-muted)]">Email</span>
+          <input type="email" class="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-2" />
+        </label>
+        <Button type="submit" variant="secondary" class="w-full justify-center">Registrarse</Button>
+      </form>
+    </section>
+  </div>
+
+  <nav class="mt-10 flex flex-wrap gap-4 text-sm font-medium">
+    <a href="/my-account/wishlist">Wishlist</a>
+    <a href="/my-account/garage">Mi garaje</a>
+    <a href="/my-account/orders">Pedidos</a>
+  </nav>
+</BaseLayout>

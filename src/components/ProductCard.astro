@@ -1,0 +1,95 @@
+---
+import type { Product } from '../data/products';
+import { formatPrice } from '../data/products';
+import ProductImage from './ProductImage.astro';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const displayPrice = product.salePrice ?? product.price;
+const imageAlt = product.imageAlt ?? product.name;
+---
+
+<article
+  class="group flex flex-col overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)] transition-shadow hover:shadow-md"
+>
+  <a
+    href={`/product/${product.slug}`}
+    class="relative aspect-square overflow-hidden bg-[var(--color-bg)]"
+  >
+    <ProductImage src={product.image} alt={imageAlt} />
+    {
+      product.badge && (
+        <span
+          class:list={[
+            'absolute left-3 top-3 rounded-full px-2 py-0.5 text-xs font-medium text-white',
+            product.badge === 'sale' && 'bg-[var(--color-danger)]',
+            product.badge === 'new' && 'bg-[var(--color-accent)]',
+          ]}
+        >
+          {product.badge === 'sale' ? 'Oferta' : 'Nuevo'}
+        </span>
+      )
+    }
+  </a>
+  <div class="flex flex-1 flex-col gap-2 p-4">
+    <p class="text-xs text-[var(--color-muted)]">{product.brand} · SKU {product.sku}</p>
+    <h3 class="text-sm font-medium leading-snug text-[var(--color-text)]">
+      <a href={`/product/${product.slug}`} class="hover:text-[var(--color-accent)]">
+        {product.name}
+      </a>
+    </h3>
+    <div class="mt-auto flex items-baseline gap-2 tabular-nums">
+      <span class="text-lg font-semibold">{formatPrice(displayPrice)}</span>
+      {
+        product.salePrice && (
+          <span class="text-sm text-[var(--color-muted)] line-through">
+            {formatPrice(product.price)}
+          </span>
+        )
+      }
+    </div>
+    <button
+      type="button"
+      class="add-to-cart mt-2 w-full rounded-[var(--radius-sm)] bg-[var(--color-accent)] py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)] disabled:opacity-50"
+      data-product-id={product.id}
+      disabled={!product.inStock}
+    >
+      {product.inStock ? 'Añadir al carrito' : 'Agotado'}
+    </button>
+  </div>
+</article>
+
+<script>
+  import { addToCart } from '../lib/cart';
+  import { products } from '../data/products';
+
+  function bindAddToCart() {
+    document.querySelectorAll('.add-to-cart').forEach((btn) => {
+      if (btn.getAttribute('data-bound')) return;
+      btn.setAttribute('data-bound', 'true');
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-product-id');
+        const product = products.find((p) => p.id === id);
+        if (!product) return;
+        addToCart({
+          productId: product.id,
+          slug: product.slug,
+          name: product.name,
+          sku: product.sku,
+          price: product.salePrice ?? product.price,
+          image: product.image,
+        });
+        btn.textContent = '✓ Añadido';
+        setTimeout(() => {
+          btn.textContent = product.inStock ? 'Añadir al carrito' : 'Agotado';
+        }, 1500);
+      });
+    });
+  }
+
+  bindAddToCart();
+  document.addEventListener('astro:page-load', bindAddToCart);
+</script>

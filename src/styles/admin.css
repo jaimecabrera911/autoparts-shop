@@ -1,0 +1,60 @@
+.admin-shell {
+  --admin-sidebar-w: 15.5rem;
+  --admin-bg: #f4f6f8;
+  --admin-sidebar: #0f172a;
+  --admin-sidebar-text: #94a3b8;
+  --admin-sidebar-active: #ffffff;
+  min-height: 100dvh;
+  background: var(--admin-bg);
+}
+
+.admin-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--admin-sidebar-text);
+  transition: background 0.15s, color 0.15s;
+}
+
+.admin-sidebar-link:hover {
+  background: rgb(255 255 255 / 0.06);
+  color: #e2e8f0;
+}
+
+.admin-sidebar-link.is-active {
+  background: rgb(15 118 110 / 0.25);
+  color: var(--admin-sidebar-active);
+}
+
+.admin-card {
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+}
+
+.admin-table th {
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+.admin-table td {
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+
+.admin-table tbody tr {
+  border-top: 1px solid var(--color-border);
+}
+
+.admin-table tbody tr:hover {
+  background: var(--color-bg);
+}

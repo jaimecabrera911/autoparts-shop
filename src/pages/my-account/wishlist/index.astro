@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import ProductCard from '../../../components/ProductCard.astro';
+import { products } from '../../../data/products';
+---
+
+<BaseLayout title="Wishlist" description="Productos guardados">
+  <Breadcrumb
+    items={[
+      { label: 'Inicio', href: '/' },
+      { label: 'Mi cuenta', href: '/my-account' },
+      { label: 'Wishlist' },
+    ]}
+  />
+  <h1 class="text-2xl font-semibold">Wishlist</h1>
+  <p class="mt-2 text-sm text-[var(--color-muted)]">Demo: productos de ejemplo guardados.</p>
+  <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {products.slice(0, 3).map((p) => <ProductCard product={p} />)}
+  </div>
+</BaseLayout>
