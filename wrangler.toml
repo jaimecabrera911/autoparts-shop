@@ -1,6 +1,6 @@
 # Sitio estático Astro → Cloudflare Pages
 # Docs: https://developers.cloudflare.com/pages/
-name = "lujos-ramirez"
+name = "autoparts-shop"
 compatibility_date = "2025-05-27"
 
 # Pages (build por Git): Cloudflare sube la carpeta dist tras `npm run build`
