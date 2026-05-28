@@ -3,7 +3,7 @@ import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://autoparts-demo.local',
+  site: process.env.SITE_URL || 'https://lujos-ramirez.pages.dev',
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],

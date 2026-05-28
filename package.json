@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "deploy": "npm run build && wrangler pages deploy dist",
+    "deploy:preview": "npm run build && wrangler pages deploy dist --branch=preview"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.5",
@@ -17,6 +19,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "wrangler": "^4.19.0",
     "@tailwindcss/vite": "^4.1.7",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",

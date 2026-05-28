@@ -25,6 +25,18 @@ Abre [http://localhost:4321](http://localhost:4321).
 | `npm run dev` | Servidor de desarrollo |
 | `npm run build` | Build estático |
 | `npm run preview` | Vista previa del build |
+| `npm run deploy` | Build + publicar en Cloudflare Pages |
+
+## Despliegue en Cloudflare
+
+Guía completa: [`docs/DEPLOY-CLOUDFLARE.md`](docs/DEPLOY-CLOUDFLARE.md)
+
+```bash
+npx wrangler login   # una vez
+npm run deploy
+```
+
+Proyecto Pages: **lujos-ramirez** → `https://lujos-ramirez.pages.dev`
 
 ## Rutas del demo
 

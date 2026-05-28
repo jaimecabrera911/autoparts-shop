@@ -1,0 +1,8 @@
+# Cloudflare Pages — https://developers.cloudflare.com/pages/
+name = "lujos-ramirez"
+compatibility_date = "2025-05-27"
+pages_build_output_dir = "dist"
+
+[vars]
+# Opcional: define PUBLIC_SITE_URL en el dashboard de Cloudflare Pages
+# PUBLIC_SITE_URL = "https://lujos-ramirez.pages.dev"
