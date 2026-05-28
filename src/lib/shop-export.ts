@@ -1,3 +1,5 @@
+import { site } from '../data/site';
+
 export type ShopExportRow = {
   SKU: string;
   Nombre: string;
@@ -21,6 +23,6 @@ export async function exportRowsToExcel(rows: ShopExportRow[], filename?: string
   XLSX.utils.book_append_sheet(workbook, sheet, 'Productos');
 
   const date = new Date().toISOString().slice(0, 10);
-  const name = filename ?? `autoparts-catalogo-${date}.xlsx`;
+  const name = filename ?? `${site.excelFilePrefix}-${date}.xlsx`;
   XLSX.writeFile(workbook, name);
 }

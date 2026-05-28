@@ -1,0 +1,258 @@
+---
+import Button from './Button.astro';
+import { site } from '../data/site';
+
+const [brandFirst, ...brandRest] = site.name.split(' ');
+const brandLast = brandRest.join(' ');
+---
+
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero__bg" aria-hidden="true">
+    <div class="hero__grid"></div>
+    <div class="hero__glow"></div>
+  </div>
+
+  <div class="hero__inner">
+    <p class="hero__eyebrow">Desde 1987 · Calidad garantizada</p>
+
+    <h1 id="hero-heading" class="hero__title">
+      <span class="hero__title-line">{brandFirst}</span>
+      <span class="hero__title-accent">{brandLast}</span>
+    </h1>
+
+    <p class="hero__lead">
+      {site.tagline}. Encuentra la pieza exacta para tu vehículo con compatibilidad verificada,
+      SKU técnico y entrega rápida.
+    </p>
+
+    <div class="hero__actions">
+      <Button href="/shop" class="hero__btn-primary">Explorar tienda</Button>
+      <Button href="/catalog" variant="secondary" class="hero__btn-secondary">
+        Ver catálogo
+      </Button>
+    </div>
+
+    <form action="/shop" method="get" class="hero__search" role="search">
+      <label class="sr-only" for="hero-search">Buscar pieza o SKU</label>
+      <input
+        id="hero-search"
+        type="search"
+        name="q"
+        placeholder="Buscar por nombre, SKU o marca…"
+        class="hero__search-input"
+      />
+      <button type="submit" class="hero__search-btn">Buscar</button>
+    </form>
+
+    <dl class="hero__stats">
+      <div>
+        <dt>+2.400</dt>
+        <dd>Referencias</dd>
+      </div>
+      <div>
+        <dt>24h</dt>
+        <dd>Despacho express</dd>
+      </div>
+      <div>
+        <dt>100%</dt>
+        <dd>Compatibilidad</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    margin: -2rem -1rem 0;
+    padding: 3.5rem 1.5rem 4rem;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    color: #f8fafc;
+  }
+
+  @media (min-width: 768px) {
+    .hero {
+      margin: -2.5rem -1.5rem 0;
+      padding: 5rem 2rem 5.5rem;
+      border-radius: 0 0 1.25rem 1.25rem;
+    }
+  }
+
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #042f2e 0%, #0f766e 45%, #115e59 100%);
+  }
+
+  .hero__grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.35;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black, transparent);
+  }
+
+  .hero__glow {
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: min(55vw, 420px);
+    height: min(55vw, 420px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(45, 212, 191, 0.35) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 42rem;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero__eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(153, 246, 228, 0.9);
+  }
+
+  .hero__title {
+    margin-top: 1rem;
+    font-family: 'Outfit', var(--font-sans);
+    font-size: clamp(2.75rem, 8vw, 4.25rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .hero__title-line {
+    display: block;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .hero__title-accent {
+    display: block;
+    background: linear-gradient(90deg, #fff 0%, #99f6e4 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero__lead {
+    margin: 1.25rem auto 0;
+    max-width: 36rem;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: rgba(226, 232, 240, 0.88);
+  }
+
+  .hero__actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .hero :global(.hero__btn-primary) {
+    background: #fff !important;
+    color: #0f766e !important;
+    border: none;
+    font-weight: 600;
+  }
+
+  .hero :global(.hero__btn-primary:hover) {
+    background: #f0fdfa !important;
+    color: #0d9488 !important;
+  }
+
+  .hero :global(.hero__btn-secondary) {
+    border-color: rgba(255, 255, 255, 0.35) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #fff !important;
+  }
+
+  .hero :global(.hero__btn-secondary:hover) {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+  }
+
+  .hero__search {
+    margin-top: 2.5rem;
+    display: flex;
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    padding: 0.25rem;
+  }
+
+  .hero__search-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    color: #fff;
+    outline: none;
+  }
+
+  .hero__search-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .hero__search-btn {
+    flex-shrink: 0;
+    border: none;
+    border-radius: calc(var(--radius-md) - 4px);
+    background: #fff;
+    color: #0f766e;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .hero__search-btn:hover {
+    background: #f0fdfa;
+  }
+
+  .hero__stats {
+    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    max-width: 28rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero__stats dt {
+    font-family: 'Outfit', var(--font-sans);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+  }
+
+  .hero__stats dd {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: rgba(204, 251, 241, 0.75);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+</style>

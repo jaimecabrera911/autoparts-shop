@@ -1,27 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
 import VehicleFilter from '../components/VehicleFilter.astro';
 import ProductCard from '../components/ProductCard.astro';
-import Button from '../components/Button.astro';
 import { categories } from '../data/categories';
 import { products } from '../data/products';
+import { site } from '../data/site';
 ---
 
-<BaseLayout title="Inicio" description="Repuestos automotrices con búsqueda por vehículo y SKU">
-  <section class="rounded-[var(--radius-md)] bg-[var(--color-surface)] border border-[var(--color-border)] p-8 md:p-12">
-    <p class="text-sm font-medium text-[var(--color-accent)]">Catálogo inteligente</p>
-    <h1 class="mt-2 max-w-2xl text-3xl font-semibold tracking-tight md:text-4xl">
-      Encuentra la pieza correcta para tu vehículo
-    </h1>
-    <p class="mt-4 max-w-xl text-[var(--color-muted)]">
-      Misma lógica que un ecommerce de autopartes profesional: compatibilidad, SKU técnico y compra
-      en pocos pasos.
-    </p>
-    <div class="mt-6 flex flex-wrap gap-3">
-      <Button href="/shop">Ver catálogo</Button>
-      <Button href="/catalog" variant="secondary">Explorar por categoría</Button>
-    </div>
-  </section>
+<BaseLayout title="Inicio" description={site.description}>
+  <Hero />
 
   <div class="mt-10">
     <VehicleFilter />

@@ -1,4 +1,9 @@
 ---
+import { site } from '../data/site';
+
+const [brandFirst, ...brandRest] = site.name.split(' ');
+const brandLast = brandRest.join(' ');
+
 const nav = [
   { href: '/catalog', label: 'Catálogo' },
   { href: '/shop', label: 'Tienda' },
@@ -11,8 +16,13 @@ const nav = [
   class="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur"
 >
   <div class="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 md:px-6">
-    <a href="/" class="shrink-0 text-lg font-semibold tracking-tight text-[var(--color-text)]">
-      Auto<span class="text-[var(--color-accent)]">Parts</span>
+    <a
+      href="/"
+      class="shrink-0 text-lg font-semibold tracking-tight text-[var(--color-text)]"
+      style="font-family: 'Outfit', var(--font-sans)"
+    >
+      {brandFirst}
+      <span class="text-[var(--color-accent)]">{brandLast}</span>
     </a>
 
     <form action="/shop" method="get" class="hidden flex-1 md:block" role="search">

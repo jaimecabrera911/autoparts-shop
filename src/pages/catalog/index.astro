@@ -1,64 +1,26 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
+import CatalogHub from '../../components/catalog/CatalogHub';
 import { categories, vehicleMakes } from '../../data/categories';
+import { getCatalogMeta } from '../../lib/shop-filters';
+import { site } from '../../data/site';
+
+const { brands } = getCatalogMeta();
 ---
 
-<BaseLayout title="Catálogo" description="Explora por marca de vehículo, categoría o fabricante">
+<BaseLayout
+  title="Catálogo"
+  description={`Explora el catálogo de ${site.name} por vehículo, categoría o marca`}
+>
   <Breadcrumb items={[{ label: 'Inicio', href: '/' }, { label: 'Catálogo' }]} />
 
-  <h1 class="text-2xl font-semibold tracking-tight">Catálogo</h1>
-  <p class="mt-2 text-[var(--color-muted)]">Elige cómo quieres explorar el inventario.</p>
-
-  <div class="mt-10 grid gap-6 md:grid-cols-3">
-    <a
-      href="/shop"
-      class="group rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-8 transition-all hover:border-[var(--color-accent)] hover:shadow-md"
-    >
-      <span class="text-3xl">🚗</span>
-      <h2 class="mt-4 text-lg font-semibold group-hover:text-[var(--color-accent)]">
-        Por marca de auto
-      </h2>
-      <p class="mt-2 text-sm text-[var(--color-muted)]">
-        Audi, BMW, Toyota y más.
-      </p>
-      <ul class="mt-4 flex flex-wrap gap-2">
-        {vehicleMakes.slice(0, 6).map((m) => (
-          <li>
-            <span class="rounded-full bg-[var(--color-bg)] px-2 py-0.5 text-xs">{m}</span>
-          </li>
-        ))}
-      </ul>
-    </a>
-
-    <a
-      href="/shop"
-      class="group rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-8 transition-all hover:border-[var(--color-accent)] hover:shadow-md"
-    >
-      <span class="text-3xl">⚙</span>
-      <h2 class="mt-4 text-lg font-semibold group-hover:text-[var(--color-accent)]">
-        Por categoría de pieza
-      </h2>
-      <p class="mt-2 text-sm text-[var(--color-muted)]">Frenos, motor, filtros…</p>
-      <ul class="mt-4 space-y-1 text-sm text-[var(--color-muted)]">
-        {categories.slice(0, 5).map((c) => (
-          <li>
-            <a href={`/shop?category=${c.slug}`}>{c.name}</a>
-          </li>
-        ))}
-      </ul>
-    </a>
-
-    <a
-      href="/shop"
-      class="group rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-8 transition-all hover:border-[var(--color-accent)] hover:shadow-md"
-    >
-      <span class="text-3xl">🏷</span>
-      <h2 class="mt-4 text-lg font-semibold group-hover:text-[var(--color-accent)]">
-        Por marca de repuesto
-      </h2>
-      <p class="mt-2 text-sm text-[var(--color-muted)]">Bosch, Ridex, ATE, Castrol…</p>
-      <p class="mt-4 text-sm font-medium text-[var(--color-accent)]">Ir a tienda →</p>
-    </a>
-  </div>
+  <CatalogHub client:load categories={categories} vehicleMakes={vehicleMakes} brands={brands} />
 </BaseLayout>
+
+<style is:global>
+  .catalog-hub__intro {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+</style>

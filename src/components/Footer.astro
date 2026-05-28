@@ -1,13 +1,15 @@
 ---
+import { site } from '../data/site';
+
 const year = new Date().getFullYear();
 ---
 
 <footer class="mt-auto border-t border-[var(--color-border)] bg-[var(--color-surface)]">
   <div class="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-4 md:px-6">
     <div>
-      <p class="text-lg font-semibold">AutoParts</p>
+      <p class="text-lg font-semibold">{site.name}</p>
       <p class="mt-2 text-sm text-[var(--color-muted)]">
-        Repuestos automotrices. Demo Astro — diseño minimalista.
+        {site.tagline}. Calidad, compatibilidad y servicio a tu medida.
       </p>
     </div>
     <div>
@@ -45,6 +47,6 @@ const year = new Date().getFullYear();
     </div>
   </div>
   <div class="border-t border-[var(--color-border)] py-4 text-center text-xs text-[var(--color-muted)]">
-    © {year} AutoParts Demo · Basado en especificación Mobex
+    © {year} {site.name}
   </div>
 </footer>
