@@ -1,8 +1,11 @@
-# Cloudflare Pages — https://developers.cloudflare.com/pages/
+# Sitio estático Astro → Cloudflare Pages
+# Docs: https://developers.cloudflare.com/pages/
 name = "lujos-ramirez"
 compatibility_date = "2025-05-27"
+
+# Pages (build por Git): Cloudflare sube la carpeta dist tras `npm run build`
 pages_build_output_dir = "dist"
 
-[vars]
-# Opcional: define PUBLIC_SITE_URL en el dashboard de Cloudflare Pages
-# PUBLIC_SITE_URL = "https://lujos-ramirez.pages.dev"
+# Si el panel ejecuta `wrangler deploy`, publica assets sin Worker (sin src/index.ts)
+[assets]
+directory = "./dist"

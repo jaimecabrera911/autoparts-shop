@@ -7,8 +7,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "npm run build && wrangler pages deploy dist",
-    "deploy:preview": "npm run build && wrangler pages deploy dist --branch=preview"
+    "deploy": "npm run build && wrangler pages deploy dist --project-name=lujos-ramirez",
+    "deploy:preview": "npm run build && wrangler pages deploy dist --project-name=lujos-ramirez --branch=preview",
+    "pages:dev": "npm run build && wrangler pages dev dist"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.5",
